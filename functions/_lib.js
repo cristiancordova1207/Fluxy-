@@ -41,8 +41,20 @@ export async function latest(id, ctx) {
   return info;
 }
 
+// Robots que siguen todos los enlaces (escáneres, comprobadores de enlaces, vistas previas): no cuentan como descargas.
+const BOT_UA = /bot|crawl|spider|slurp|preview|headless|python|curl|wget|httpclient|okhttp|go-http|java\/|scan|monitor|check|fetch|facebookexternalhit|whatsapp|telegram|discord|slack|lighthouse/i;
+const DATACENTER = /google|amazon|aws|microsoft|azure|digitalocean|ovh|hetzner|linode|akamai|oracle|alibaba|tencent|censys|shodan|leaseweb|vultr|choopa|contabo|cloudflare|fastly|m247|datacamp|scaleway/i;
+export function isBot(request) {
+  const ua = request.headers.get('User-Agent') || '';
+  if (!ua || BOT_UA.test(ua)) return true;
+  if (!request.headers.get('Accept-Language')) return true; // los navegadores reales siempre lo envían
+  return DATACENTER.test(request.cf?.asOrganization || '');
+}
+
 // Guarda un evento con la ubicación aproximada que da Cloudflare (no se guarda la IP).
+// Las descargas y donaciones (web) ignoran robots; los avisos de las apps vienen marcados con fromApp.
 export function track(request, ctx, ev) {
+  if (!ev.fromApp && isBot(request)) return;
   const cf = request.cf || {};
   const ua = request.headers.get('User-Agent') || '';
   const os = ev.os || (/Windows NT 10/.test(ua) ? 'Windows 10/11' : /Windows/.test(ua) ? 'Windows' : /Mac OS/.test(ua) ? 'macOS' : /Android/.test(ua) ? 'Android' : /iPhone|iPad/.test(ua) ? 'iOS' : /Linux/.test(ua) ? 'Linux' : 'Otro');
