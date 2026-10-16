@@ -2,7 +2,7 @@
 
 // Enlace de donación de Stripe (cantidad libre). Para cambiarlo basta con editar esta línea:
 // las apps y la web van a /donar, que redirige aquí.
-export const DONATE_URL = 'https://donate.stripe.com/test_3cI7sLcIf8Jtc4g6gV0x200';
+export const DONATE_URL = 'https://buy.stripe.com/3cI7sLcIf8Jtc4g6gV0x200';
 
 // Supabase: clave pública (anon). Solo puede llamar a fluxy_track y fluxy_stats.
 const SUPABASE_URL = 'https://dcepxcltgzipkmzpptzn.supabase.co';
